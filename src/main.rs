@@ -8,7 +8,7 @@ use iced::{window, Element, Length, Sandbox, Settings, Theme};
 use iced_native::widget::{button, container, row, svg, Column, Row, Space};
 use iced_native::{row, Alignment};
 
-use crate::files::choose_folder;
+use crate::files::{choose_folder, scan_folder};
 
 mod files;
 
@@ -47,7 +47,22 @@ impl Sandbox for FileShuffler {
             Message::ClickedClear => {}
             Message::ClickedRefresh => {}
             Message::ClickedChooseFolder => match choose_folder() {
-                Some(path) => self.current_directory = path,
+                Some(path) => {
+                    self.current_directory = path;
+                    match scan_folder(&self.current_directory) {
+                        Ok(directory) => {
+                            self.file_list.clear();
+
+                            for file in directory {
+                                self.file_list
+                                    .push(file.unwrap().file_name().to_str().unwrap().to_string())
+                            }
+                        }
+                        Err(error) => {
+                            println!("error scanning folder")
+                        }
+                    }
+                }
                 None => {
                     println!("error selecting folder")
                 }
@@ -63,6 +78,9 @@ impl Sandbox for FileShuffler {
 
         let main_column = Column::new().align_items(Alignment::Center);
         let directory_text = container(text(self.current_directory.to_str().unwrap()))
+            .align_y(Vertical::Bottom)
+            .height(Length::Fill);
+        let file_count_text = container(text(format!("File Count: {}", &self.file_list.len())))
             .align_y(Vertical::Bottom)
             .height(Length::Fill);
 
@@ -81,6 +99,7 @@ impl Sandbox for FileShuffler {
         .height(Length::Fill);
 
         main_column
+            .push(file_count_text)
             .push(directory_text)
             .push(Space::new(10.0, 10.0))
             .push(button_row)
