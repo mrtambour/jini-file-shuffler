@@ -8,6 +8,10 @@ use iced::{window, Element, Length, Sandbox, Settings, Theme};
 use iced_native::widget::{button, container, row, svg, Column, Row, Space};
 use iced_native::{row, Alignment};
 
+use crate::files::choose_folder;
+
+mod files;
+
 struct FileShuffler {
     current_directory: PathBuf,
     file_list: Vec<String>,
@@ -18,7 +22,8 @@ struct FileShuffler {
 enum Message {
     ClickedNext,
     ClickedClear,
-    ClickedScan,
+    ClickedRefresh,
+    ClickedChooseFolder,
 }
 
 impl Sandbox for FileShuffler {
@@ -40,7 +45,13 @@ impl Sandbox for FileShuffler {
         match message {
             Message::ClickedNext => {}
             Message::ClickedClear => {}
-            Message::ClickedScan => {}
+            Message::ClickedRefresh => {}
+            Message::ClickedChooseFolder => match choose_folder() {
+                Some(path) => self.current_directory = path,
+                None => {
+                    println!("error selecting folder")
+                }
+            },
         }
     }
 
@@ -48,10 +59,10 @@ impl Sandbox for FileShuffler {
         let clear_button = button("Clear Queue");
         let next_button = button("Next File");
         let scan_button = button("Refresh Queue");
-        let choose_folder_btn = button("Choose Folder");
+        let choose_folder_btn = button("Choose Folder").on_press(Message::ClickedChooseFolder);
 
         let main_column = Column::new().align_items(Alignment::Center);
-        let directory_text = container(text("Choose a Folder"))
+        let directory_text = container(text(self.current_directory.to_str().unwrap()))
             .align_y(Vertical::Bottom)
             .height(Length::Fill);
 
