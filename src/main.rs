@@ -44,7 +44,10 @@ impl Sandbox for FileShuffler {
     fn update(&mut self, message: Self::Message) {
         match message {
             Message::ClickedNext => {}
-            Message::ClickedClear => {}
+            Message::ClickedClear => {
+                self.file_list.clear();
+                self.current_directory.clear()
+            }
             Message::ClickedRefresh => {
                 if self.file_list.is_empty() {
                 } else {
@@ -89,7 +92,7 @@ impl Sandbox for FileShuffler {
     }
 
     fn view(&self) -> Element<Self::Message> {
-        let clear_button = button("Clear Queue");
+        let clear_button = button("Clear Queue").on_press(Message::ClickedClear);
         let next_button = button("Next File");
         let scan_button = button("Refresh Queue").on_press(Message::ClickedRefresh);
         let choose_folder_btn = button("Choose Folder").on_press(Message::ClickedChooseFolder);
