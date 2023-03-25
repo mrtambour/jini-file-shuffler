@@ -43,7 +43,12 @@ impl Sandbox for FileShuffler {
 
     fn update(&mut self, message: Self::Message) {
         match message {
-            Message::ClickedNext => {}
+            Message::ClickedNext => {
+                if self.file_list.is_empty() {
+                } else {
+                    open::that(self.file_list.pop().unwrap()).unwrap();
+                }
+            }
             Message::ClickedClear => {
                 self.file_list.clear();
                 self.current_directory.clear()
@@ -57,7 +62,7 @@ impl Sandbox for FileShuffler {
 
                             for file in directory {
                                 self.file_list
-                                    .push(file.unwrap().file_name().to_str().unwrap().to_string())
+                                    .push(file.unwrap().path().to_str().unwrap().to_string())
                             }
                         }
                         Err(error) => {
@@ -76,7 +81,7 @@ impl Sandbox for FileShuffler {
 
                             for file in directory {
                                 self.file_list
-                                    .push(file.unwrap().file_name().to_str().unwrap().to_string())
+                                    .push(file.unwrap().path().to_str().unwrap().to_string())
                             }
                         }
                         Err(error) => {
@@ -93,7 +98,7 @@ impl Sandbox for FileShuffler {
 
     fn view(&self) -> Element<Self::Message> {
         let clear_button = button("Clear Queue").on_press(Message::ClickedClear);
-        let next_button = button("Next File");
+        let next_button = button("Next File").on_press(Message::ClickedNext);
         let scan_button = button("Refresh Queue").on_press(Message::ClickedRefresh);
         let choose_folder_btn = button("Choose Folder").on_press(Message::ClickedChooseFolder);
 
@@ -101,7 +106,7 @@ impl Sandbox for FileShuffler {
         let directory_text = container(text(self.current_directory.to_str().unwrap()))
             .align_y(Vertical::Bottom)
             .height(Length::Fill);
-        let file_count_text = container(text(format!("File Count: {}", &self.file_list.len())))
+        let file_count_text = container(text(format!("Files Queued: {}", &self.file_list.len())))
             .align_y(Vertical::Bottom)
             .height(Length::Fill);
 
