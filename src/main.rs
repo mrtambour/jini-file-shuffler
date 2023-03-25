@@ -45,7 +45,25 @@ impl Sandbox for FileShuffler {
         match message {
             Message::ClickedNext => {}
             Message::ClickedClear => {}
-            Message::ClickedRefresh => {}
+            Message::ClickedRefresh => {
+                if self.file_list.is_empty() {
+                } else {
+                    match scan_folder(&self.current_directory) {
+                        Ok(directory) => {
+                            self.file_list.clear();
+
+                            for file in directory {
+                                self.file_list
+                                    .push(file.unwrap().file_name().to_str().unwrap().to_string())
+                            }
+                        }
+                        Err(error) => {
+                            println!("error scanning folder")
+                        }
+                    }
+                }
+            }
+
             Message::ClickedChooseFolder => match choose_folder() {
                 Some(path) => {
                     self.current_directory = path;
@@ -73,7 +91,7 @@ impl Sandbox for FileShuffler {
     fn view(&self) -> Element<Self::Message> {
         let clear_button = button("Clear Queue");
         let next_button = button("Next File");
-        let scan_button = button("Refresh Queue");
+        let scan_button = button("Refresh Queue").on_press(Message::ClickedRefresh);
         let choose_folder_btn = button("Choose Folder").on_press(Message::ClickedChooseFolder);
 
         let main_column = Column::new().align_items(Alignment::Center);
