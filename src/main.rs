@@ -116,9 +116,10 @@ impl Sandbox for FileShuffler {
         let directory_text = container(text(self.current_directory.to_str().unwrap()))
             .align_y(Vertical::Bottom)
             .height(Length::Fill);
-        let file_count_text = container(text(format!("Files Queued: {}", &self.file_list.len())))
-            .align_y(Vertical::Bottom)
-            .height(Length::Fill);
+        let file_count_text =
+            container(text(format!("Files Queued: {}", &self.file_list.len())).size(30.0))
+                .align_y(Vertical::Bottom)
+                .height(Length::Fill);
 
         let button_row = container(
             Row::new()
