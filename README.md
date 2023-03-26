@@ -1,6 +1,6 @@
 # Jini File Shuffler
 
-Jini allows you to can scan a folder containing files of any format to create a queue. You can then open each file one by one. The queue is shuffled when the folder is scanned but you can keep shuffling as many times as you like manaually.
+Jini allows you to can scan a folder containing files of any format to create a queue. You can then open each file one by one. The queue is shuffled when the folder is scanned initially but you can keep shuffling as many times as you like manually.
 
 
 ## Features
