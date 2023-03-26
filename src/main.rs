@@ -91,6 +91,7 @@ impl Sandbox for FileShuffler {
                                 self.file_list
                                     .push(file.unwrap().path().to_str().unwrap().to_string())
                             }
+                            self.file_list.seq_shuffle(&mut rand::thread_rng());
                         }
                         Err(error) => {
                             println!("error scanning folder")
