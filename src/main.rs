@@ -7,6 +7,7 @@ use iced::widget::{column, text};
 use iced::{window, Element, Length, Sandbox, Settings, Theme};
 use iced_native::widget::{button, container, row, svg, Column, Row, Space};
 use iced_native::{row, Alignment};
+use rip_shuffle::RipShuffleSequential;
 
 use crate::files::{choose_folder, scan_folder};
 
@@ -23,6 +24,7 @@ enum Message {
     ClickedNext,
     ClickedClear,
     ClickedRefresh,
+    ClickedShuffle,
     ClickedChooseFolder,
 }
 
@@ -52,6 +54,12 @@ impl Sandbox for FileShuffler {
             Message::ClickedClear => {
                 self.file_list.clear();
                 self.current_directory.clear()
+            }
+            Message::ClickedShuffle => {
+                if self.file_list.is_empty() {
+                } else {
+                    self.file_list.seq_shuffle(&mut rand::thread_rng());
+                }
             }
             Message::ClickedRefresh => {
                 if self.file_list.is_empty() {
@@ -101,6 +109,7 @@ impl Sandbox for FileShuffler {
         let next_button = button("Next File").on_press(Message::ClickedNext);
         let scan_button = button("Refresh Queue").on_press(Message::ClickedRefresh);
         let choose_folder_btn = button("Choose Folder").on_press(Message::ClickedChooseFolder);
+        let shuffle_button = button("Shuffle Files").on_press(Message::ClickedShuffle);
 
         let main_column = Column::new().align_items(Alignment::Center);
         let directory_text = container(text(self.current_directory.to_str().unwrap()))
@@ -116,6 +125,7 @@ impl Sandbox for FileShuffler {
                 .align_items(Alignment::Center)
                 .push(clear_button)
                 .push(next_button)
+                .push(shuffle_button)
                 .push(scan_button)
                 .push(choose_folder_btn),
         )
@@ -142,7 +152,7 @@ fn main() {
     println!("Jini File Shuffler");
     let settings = Settings {
         window: window::Settings {
-            size: (500, 200),
+            size: (600, 200),
             resizable: true,
             decorations: true,
 
